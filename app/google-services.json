@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "684345319517",
+    "firebase_url": "https://travelapp-43c82.firebaseio.com",
+    "project_id": "travelapp-43c82",
+    "storage_bucket": "travelapp-43c82.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684345319517:android:14054fc65da6c7dd",
+        "android_client_info": {
+          "package_name": "com.rickhuisman.musicapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "684345319517-jmblsa9vhc6qh6b5pne95hdmu166g2tm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rickhuisman.musicapp",
+            "certificate_hash": "22b232979763eb94c2ef45b10c536aa098936389"
+          }
+        },
+        {
+          "client_id": "684345319517-vo8nd4956vp2b9ju4hs0emrrhg9elet5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkNr1BdcWpiEmNLKkvCCEetQH5dvvztS8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "684345319517-vo8nd4956vp2b9ju4hs0emrrhg9elet5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
