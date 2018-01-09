@@ -16,7 +16,7 @@ public class LibraryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.frag_library, container, false);
+        View root = inflater.inflate(R.layout.fragment_library, container, false);
 
         return root;
     }

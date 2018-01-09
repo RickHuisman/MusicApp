@@ -42,7 +42,9 @@ public class StartActivity extends AppCompatActivity {
 
     private EditText mPassword;
 
-    private Button mRegister;
+    private Button mLogin;
+
+    private ProgressDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +56,9 @@ public class StartActivity extends AppCompatActivity {
         mRegisterText = (TextView) findViewById(R.id.text_view_register);
         mEmail = (EditText) findViewById(R.id.edit_text_email);
         mPassword = (EditText) findViewById(R.id.edit_text_password);
-        mRegister = (Button) findViewById(R.id.button_login);
+        mLogin = (Button) findViewById(R.id.button_login);
+
+        mDialog = new ProgressDialog(this);
 
         SpannableString ss = new SpannableString("No account yet? create one");
         ClickableSpan clickableSpan = new ClickableSpan() {
@@ -84,20 +88,9 @@ public class StartActivity extends AppCompatActivity {
             }
         };
 
-        mRegisterText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = mEmail.getText().toString();
-                String password = mPassword.getText().toString();
+        mLogin.setOnClickListener(loginButton());
 
-                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-                    loginUser(email, password);
-                } else {
-                    Toast.makeText(StartActivity.this, "Make sure to fill in all the fields.",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        mRegisterText.setOnClickListener(registerTextButton());
     }
 
     @Override
@@ -114,20 +107,49 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
+    public View.OnClickListener loginButton() {
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = mEmail.getText().toString();
+                String password = mPassword.getText().toString();
+
+                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
+                    loginUser(email, password);
+                } else {
+                    Toast.makeText(StartActivity.this, "Make sure to fill in all the fields.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+        return onClickListener;
+    }
+
+    public View.OnClickListener registerTextButton() {
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                startActivity(new Intent(StartActivity.this, MainActivity.class));
+            }
+        };
+        return onClickListener;
+    }
+
     public void loginUser(String email, String password) {
-        final ProgressDialog dialog = new ProgressDialog(StartActivity.this);
-        dialog.show();
+        mDialog.show();
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            dialog.cancel();
+                            mDialog.cancel();
+                            finish();
                             startActivity(new Intent(StartActivity.this, MainActivity.class));
                         } else {
                             Toast.makeText(StartActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            dialog.cancel();
+                            mDialog.cancel();
                         }
                     }
                 });

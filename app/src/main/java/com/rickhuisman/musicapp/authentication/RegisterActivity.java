@@ -48,6 +48,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private Button mRegister;
 
+    private ProgressDialog mDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +61,8 @@ public class RegisterActivity extends AppCompatActivity {
         mUsername = (EditText) findViewById(R.id.edit_text_user_name);
         mPassword = (EditText) findViewById(R.id.edit_text_password);
         mRegister = (Button) findViewById(R.id.button_register);
+
+        mDialog = new ProgressDialog(this);
 
         firestoreDB = FirebaseFirestore.getInstance();
 
@@ -90,8 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void registerUser(final String email, final String username, String password) {
-        final ProgressDialog dialog = new ProgressDialog(RegisterActivity.this);
-        dialog.show();
+        mDialog.show();
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -109,18 +112,26 @@ public class RegisterActivity extends AppCompatActivity {
                             mCurrentUserRef.set(userInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    Log.d(TAG, "Succes");
+                                    mDialog.cancel();
+                                    finish();
+                                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Log.d(TAG, e.toString());
+                                    mDialog.cancel();
+
+                                    Toast.makeText(RegisterActivity.this, "Authentication failed.",
+                                            Toast.LENGTH_SHORT).show();
                                 }
                             });
                         } else {
+                            Log.d(TAG, task.getException().toString());
+
                             Toast.makeText(RegisterActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            dialog.cancel();
+                            mDialog.cancel();
                         }
                     }
                 });

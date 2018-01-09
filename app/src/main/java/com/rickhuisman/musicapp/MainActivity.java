@@ -1,5 +1,6 @@
 package com.rickhuisman.musicapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,7 +12,9 @@ import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.rickhuisman.musicapp.authentication.StartActivity;
 import com.rickhuisman.musicapp.library.LibraryFragment;
+import com.rickhuisman.musicapp.uploadSong.UploadSongActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,13 +33,14 @@ public class MainActivity extends AppCompatActivity {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-
+                    getSupportActionBar().setTitle(R.string.title_home);
                     return true;
                 case R.id.navigation_explore:
-
+                    getSupportActionBar().setTitle(R.string.title_explore);
                     return true;
                 case R.id.navigation_library:
-                    transaction.replace(R.id.navigation, new LibraryFragment()).commit();
+                    getSupportActionBar().setTitle(R.string.title_library);
+                    transaction.replace(R.id.frame_layout_container, new LibraryFragment()).commit();
                     return true;
             }
             return false;
@@ -48,8 +52,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_navigation_view_navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        // Set first fragment and set the title to Library
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.frame_layout_container, new LibraryFragment()).commit();
+        getSupportActionBar().setTitle(R.string.title_library);
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener(){
@@ -90,8 +99,19 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+
+                return true;
+            case R.id.action_log_out:
+                mAuth.signOut();
+                finish();
+                startActivity(new Intent(MainActivity.this, StartActivity.class));
+                return true;
+            case R.id.action_add_song:
+                finish();
+                startActivity(new Intent(MainActivity.this, UploadSongActivity.class));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
