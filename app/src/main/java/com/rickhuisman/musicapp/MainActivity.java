@@ -42,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
                     getSupportActionBar().setTitle(R.string.title_library);
                     transaction.replace(R.id.frame_layout_container, new LibraryFragment()).commit();
                     return true;
+                case R.id.navigation_now_playing:
+                    getSupportActionBar().setTitle(R.string.title_now_playing);
+                    transaction.replace(R.id.frame_layout_container, new LibraryFragment()).commit();
+                    return true;
             }
             return false;
         }

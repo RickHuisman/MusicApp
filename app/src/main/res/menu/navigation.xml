@@ -16,4 +16,9 @@
         android:icon="@drawable/ic_library_music_black_24dp"
         android:title="@string/title_library" />
 
+    <item
+        android:id="@+id/navigation_now_playing"
+        android:icon="@drawable/ic_mic_black_24dp"
+        android:title="@string/title_now_playing" />
+
 </menu>

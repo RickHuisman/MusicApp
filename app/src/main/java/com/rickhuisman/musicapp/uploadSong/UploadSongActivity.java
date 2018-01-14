@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.rickhuisman.musicapp.R;
+import com.rickhuisman.musicapp.models.ParentSong;
 import com.rickhuisman.musicapp.models.acrcloud.Music;
 import com.rickhuisman.musicapp.models.acrcloud.Spotify;
 import com.stepstone.stepper.StepperLayout;
@@ -31,7 +32,7 @@ public class UploadSongActivity extends AppCompatActivity implements DataManager
 
     private static final String DATA = "data";
 
-    private String mData;
+    private ParentSong parentSong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +51,16 @@ public class UploadSongActivity extends AppCompatActivity implements DataManager
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(CURRENT_STEP_POSITION_KEY, mStepperLayout.getCurrentStepPosition());
-        outState.putString(DATA, mData);
+//        outState.putString(DATA, parentSong);
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void saveData(String data) {
-        mData = data;
+    public void saveData(ParentSong data) {
+        parentSong = data;
     }
 
-    public String getData() {
-        return mData;
+    public ParentSong getData() {
+        return parentSong;
     }
 }

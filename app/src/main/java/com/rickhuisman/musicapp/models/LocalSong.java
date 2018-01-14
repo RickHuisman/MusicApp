@@ -7,16 +7,17 @@ import android.media.Image;
  */
 
 public class LocalSong {
-    private String title, artist, coverUrl, currentLocation, size;
+    private String title, artist, coverUrl, currentLocation, duration, size;
 
     public LocalSong() {
     }
 
-    public LocalSong(String title, String artist, String coverUrl, String currentLocation, String size) {
+    public LocalSong(String title, String artist, String coverUrl, String currentLocation, String duration, String size) {
         this.title = title;
         this.artist = artist;
         this.coverUrl = coverUrl;
         this.currentLocation = currentLocation;
+        this.duration = duration;
         this.size = size;
     }
 
@@ -50,5 +51,21 @@ public class LocalSong {
 
     public void setCurrentLocation(String currentLocation) {
         this.currentLocation = currentLocation;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 }

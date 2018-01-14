@@ -27,16 +27,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.rickhuisman.musicapp.R;
 import com.rickhuisman.musicapp.models.LocalSong;
+import com.rickhuisman.musicapp.models.ParentSong;
 import com.rickhuisman.musicapp.models.acrcloud.Music;
 import com.rickhuisman.musicapp.models.acrcloud.Spotify;
 import com.rickhuisman.musicapp.uploadSong.utils.RecyclerViewSongsAdapter;
@@ -51,13 +49,12 @@ import com.stepstone.stepper.VerificationError;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import static android.icu.lang.UProperty.INT_START;
 
 /**
  * Created by rickh on 1/4/2018.
@@ -89,6 +86,10 @@ public class SelectSongFragment extends Fragment implements Step, BlockingStep, 
     private String acrcloudServiceSuccess = "";
 
     private Boolean fileSelected;
+
+    private int selectedFileInt;
+
+    private StepperLayout.OnNextClickedCallback callback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -141,7 +142,9 @@ public class SelectSongFragment extends Fragment implements Step, BlockingStep, 
             mAdapter.setListener(new RecyclerViewSongsAdapter.AdapterListener() {
                 @Override
                 public void onClick(int test) {
-                    Toast.makeText(getContext(), localSongsList.get(test).getTitle(), Toast.LENGTH_SHORT).show();
+                    selectedFileInt = test;
+                    fileSelected = true;
+//                    callback.getStepperLayout().setNextButtonColor(getResources().getColor(R.color.colorPrimary));
                 }
             });
         } else {
@@ -157,18 +160,18 @@ public class SelectSongFragment extends Fragment implements Step, BlockingStep, 
         if (songCursor != null && songCursor.moveToFirst()) {
             int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int songArtist = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int songCover = songCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
+            int songDuration = songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
             int songLocation = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
             int songSize = songCursor.getColumnIndex(MediaStore.Audio.Media.SIZE);
 
             do {
                 String currentTitle = songCursor.getString(songTitle);
                 String currentArtist = songCursor.getString(songArtist);
-                String coverImage = "test"; // TODO get cover art
+                String currentDuration = songCursor.getString(songDuration);
                 String currentLocation = songCursor.getString(songLocation);
-                String currentSize = songCursor.getString(songSize);
+                String currentSize = getFileSize(songCursor.getLong(songSize));
 
-                LocalSong localSong = new LocalSong(currentTitle, currentArtist, "", currentLocation, currentSize);
+                LocalSong localSong = new LocalSong(currentTitle, currentArtist, "", currentLocation, currentDuration, currentSize);
                 localSongsList.add(localSong);
             } while (songCursor.moveToNext());
         }
@@ -188,6 +191,14 @@ public class SelectSongFragment extends Fragment implements Step, BlockingStep, 
                 }
             }
         }
+    }
+
+    public static String getFileSize(long size) {
+        if (size <= 0)
+            return "0";
+        final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.0#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
     public void findSongInfo(String songURI) {
@@ -235,7 +246,7 @@ public class SelectSongFragment extends Fragment implements Step, BlockingStep, 
         Log.d(TAG, e.getMessage());
     }
 
-    public void setUpDialog(Spotify spotify) {
+    public void setUpDialog(final Spotify spotify) {
         if (Objects.equals(acrcloudServiceSuccess, "Success")) {
             progressDialog.cancel();
 
@@ -267,13 +278,23 @@ public class SelectSongFragment extends Fragment implements Step, BlockingStep, 
 
             Glide.with(this).load(spotify.getThumbnailUrl()).into(mCoverImage);
 
-            builder.setPositiveButton("Select Song", new DialogInterface.OnClickListener() {
+            builder.setTitle("Is this the song you want to upload?");
+
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    ParentSong parentSong = new ParentSong(
+                            music,
+                            spotify,
+                            localSongsList.get(selectedFileInt).getDuration(),
+                            localSongsList.get(selectedFileInt).getSize(),
+                            localSongsList.get(selectedFileInt).getCurrentLocation());
 
+                    dataManager.saveData(parentSong);
+                    callback.goToNextStep();
                 }
             });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     alertDialog.cancel();
@@ -301,11 +322,13 @@ public class SelectSongFragment extends Fragment implements Step, BlockingStep, 
 
     @Override
     public void onNextClicked(StepperLayout.OnNextClickedCallback callback) {
-        if (fileSelected = true) {
-            String enteredText = "test";
-            dataManager.saveData(enteredText);
-            callback.goToNextStep();
+        this.callback = callback;
+
+        if (fileSelected) {
+            String path = localSongsList.get(selectedFileInt).getCurrentLocation();
+            findSongInfo(path);
         } else {
+            callback.getStepperLayout().setCurrentStepPosition(0);
         }
     }
 

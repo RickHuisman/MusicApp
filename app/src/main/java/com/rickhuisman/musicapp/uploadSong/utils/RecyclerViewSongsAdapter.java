@@ -50,7 +50,6 @@ public class RecyclerViewSongsAdapter extends RecyclerView.Adapter<RecyclerViewS
             play = (ImageView) view.findViewById(R.id.image_view_play);
 
             view.setOnClickListener(this);
-            play.setOnClickListener(test());
         }
 
         @Override
@@ -61,16 +60,6 @@ public class RecyclerViewSongsAdapter extends RecyclerView.Adapter<RecyclerViewS
             notifyItemChanged(selected_position);
 
             mListener.onClick(selected_position);
-        }
-
-        public View.OnClickListener test() {
-            View.OnClickListener test = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(context, "play", Toast.LENGTH_SHORT).show();
-                }
-            };
-            return test;
         }
     }
 
